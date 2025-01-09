@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu</title>
+    <style>
+        body {
+            font-family: "Comic Sans MS", cursive, sans-serif;
+            background-color: #fce4ec; /* Fond rose clair */
+            color: #4d004d; /* Texte en rose foncé */
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #d81b60; /* Rose plus foncé pour le titre */
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        h2 {
+            color: #880e4f; /* Rose encore plus foncé pour les sous-titres */
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0 auto;
+            max-width: 600px;
+        }
+
+        li {
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 15px 25px;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            background-color: #d81b60; /* Rose profond pour les boutons */
+            border: 2px solid #f06292; /* Bordure rose pâle */
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            text-align: center;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .button:hover {
+            background-color: #f06292; /* Rose plus clair au survol */
+            border-color: #d81b60; /* Bordure plus foncée au survol */
+            box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .error-list {
+            margin: 20px auto;
+            padding: 15px;
+            background-color: #fff0f5; /* Fond rose clair pour les erreurs */
+            border: 1px solid #f06292; /* Bordure rose pâle */
+            border-radius: 12px;
+            max-width: 500px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .error-list li {
+            color: #cc0066; /* Texte d'erreur en rose vif */
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .button {
+                font-size: 16px;
+                padding: 10px 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .error-list {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Menu Principal</h1>
+
+    {% if errors %}
+        <h2>Erreurs :</h2>
+        <ul class="error-list">
+            {% for error in errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <ul>
+        <li><a class="button" href="{% url 'data_preview' %}">Visualiser le tableau des données</a></li>
+        <li><a class="button" href="{% url 'recherche' %}">Recherche par ligne, colonne et mots</a></li>
+        <li><a class="button" href="{% url 'statistical_analysis' %}">Analyse Statistique des données</a></li>
+        <li><a class="button" href="{% url 'visualization' %}">Visualisation par graphe</a></li>
+        <li><a class="button" href="{% url 'upload_csv' %}">Télécharger un autre fichier CSV</a></li>
+    </ul>
+</body>
+</html>

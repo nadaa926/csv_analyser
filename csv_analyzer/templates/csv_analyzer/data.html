@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prévisualisation des données</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fce4ec;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #e91e63;
+        }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            width: 160px;
+        }
+
+        .form-group input, .form-group select, .form-group button {
+            width: 30%;
+            padding: 8px;
+            margin-right: 10px;
+            border: 1px solid #e91e63;
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: white;
+            text-align: center;
+        }
+
+        .form-group input[type="text"], .form-group input[type="number"], .form-group select {
+            width: 25%;
+        }
+
+        .form-group button {
+            width: 20%;
+            background-color: #d81b60;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group button:hover {
+            background-color: #c2185b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-group button:active {
+            background-color: #880e4f;
+            transform: translateY(1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .data-table-container {
+            max-height: 400px;
+            overflow-y: auto;
+            margin: 20px auto;
+            width: 90%;
+            border-collapse: collapse;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th,
+        .data-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .data-table th {
+            background-color: #e91e63;
+            color: white;
+            position: sticky; /* Fixer l'en-tête */
+            top: 0; /* Position de l'en-tête figée */
+            z-index: 1; /* Assurer que l'en-tête reste au-dessus des autres éléments */
+        }
+
+        .data-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .data-table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .no-data {
+            color: red;
+            font-size: 16px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-group">
+        <button type="button" id="backToMenuButton" onclick="window.location.href='/menu/'">Retour au menu</button>
+    </div>
+    <h1>Prévisualisation des données</h1>
+
+    <!-- Zone contenant le tableau avec défilement -->
+    <div class="data-table-container">
+        <!-- Inclusion des données HTML -->
+        {{ data_html|safe }}
+    </div>
+</body>
+</html>

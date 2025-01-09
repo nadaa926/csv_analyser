@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rechercher des données CSV</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fce4ec;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f7c8d4;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #d81b60;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        label {
+            font-size: 14px;
+            color: #d81b60;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            width: 160px;
+        }
+
+        .form-group input, .form-group select, .form-group button {
+            width: 25%;
+            padding: 8px;
+            margin-right: 10px;
+            border: 1px solid #e91e63;
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: white;
+            text-align: center;
+        }
+
+        .form-group button {
+            background-color: #d81b60;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-group button:hover {
+            background-color: #880e4f;
+            transform: translateY(-2px);
+        }
+
+        .form-group button:active {
+            background-color: #880e4f;
+            transform: translateY(1px);
+        }
+
+        .error-message {
+            color: red;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid red;
+            border-radius: 5px;
+            background-color: #ffe6e6;
+        }
+
+        .results-container {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e91e63;
+            max-height: 400px; /* Hauteur maximale pour permettre le défilement */
+            overflow-y: auto; /* Barre de défilement verticale */
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        .data-table th {
+            background-color: #d81b60;
+            color: white;
+            position: sticky; /* Garder l'en-tête visible */
+            top: 0; /* Positionner l'en-tête en haut */
+            z-index: 1; /* Priorité d'affichage pour éviter les superpositions */
+        }
+
+        .data-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .data-table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .data-table caption {
+            font-size: 16px;
+            font-weight: bold;
+            color: #d81b60;
+            margin-bottom: 20px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="form-group">
+            <button type="button" id="backToMenuButton" onclick="window.location.href='/menu/'">Retour au menu</button>
+        </div>
+        <h2>Rechercher des données par Index, Colonne ou texte </h2>
+        <form id="indexationForm">
+            <div class="form-group">
+                <label for="index_input">Index (0-{{ data|length|add:"-1" }}) :</label>
+                <input type="number" id="index_input" min="0" max="{{ data|length|add:"-1" }}" placeholder="Entrez l'index">
+                <button type="button" id="showRowButton">Afficher Ligne</button>
+            </div>
+            
+            <div class="form-group">
+                <label for="column_input">Colonne :</label>
+                <select id="column_input">
+                    <option value="">Sélectionnez une colonne</option>
+                    {% for header in headers %}
+                        <option value="{{ header }}">{{ header }}</option>
+                    {% endfor %}
+                </select>
+                <button type="button" id="showColumnButton">Afficher Colonne</button>
+            </div>
+
+            <div class="form-group">
+                <label for="search_input">Rechercher un mot ou un chiffre :</label>
+                <input type="text" id="search_input" placeholder="Entrez un mot ou un chiffre">
+                <button type="button" id="searchButton">Rechercher</button>
+            </div>
+        </form>
+
+        <div id="indexedData" class="results-container hidden">
+            <h3>Données sélectionnées :</h3>
+            <div id="dataOutput"></div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('showRowButton').addEventListener('click', () => {
+            const indexInput = document.getElementById('index_input').value;
+            const output = document.getElementById('dataOutput');
+            const resultsContainer = document.getElementById('indexedData');
+
+            if (indexInput !== '' && !isNaN(indexInput)) {
+                const rowIndex = parseInt(indexInput, 10);
+                if (rowIndex >= 0 && rowIndex < {{ data|length }}) {
+                    const row = {{ data|safe }}[rowIndex];
+                    const headers = {{ headers|safe }};
+                    const tableHTML = `
+                        <table class="data-table">
+                            <thead>
+                                <tr>${headers.map(header => `<th>${header}</th>`).join('')}</tr>
+                            </thead>
+                            <tbody>
+                                <tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>
+                            </tbody>
+                        </table>`;
+                    output.innerHTML = tableHTML;
+                    resultsContainer.classList.remove('hidden');
+                } else {
+                    alert("Index invalide. Veuillez entrer un index valide.");
+                }
+            } else {
+                alert("Veuillez entrer un index pour afficher une ligne.");
+            }
+        });
+
+        document.getElementById('showColumnButton').addEventListener('click', () => {
+            const columnInput = document.getElementById('column_input').value;
+            const output = document.getElementById('dataOutput');
+            const resultsContainer = document.getElementById('indexedData');
+
+            if (columnInput !== '') {
+                const headers = {{ headers|safe }};
+                const data = {{ data|safe }};
+                const columnIndex = headers.indexOf(columnInput);
+                const firstColumnData = data.map(row => row[0]);
+                if (columnIndex !== -1) {
+                    const columnData = data.map(row => row[columnIndex]);
+                    const tableHTML = `
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>${headers[0]}</th>
+                                    <th>${columnInput}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.map((row, i) => `
+                                    <tr>
+                                        <td>${firstColumnData[i]}</td>
+                                        <td>${columnData[i]}</td>
+                                    </tr>`).join('')}
+                            </tbody>
+                        </table>`;
+                    output.innerHTML = tableHTML;
+                    resultsContainer.classList.remove('hidden');
+                } else {
+                    alert("Colonne invalide. Veuillez sélectionner une colonne valide.");
+                }
+            } else {
+                alert("Veuillez sélectionner une colonne pour afficher les données.");
+            }
+        });
+
+        document.getElementById('searchButton').addEventListener('click', () => {
+            const searchInput = document.getElementById('search_input').value.trim();
+            const output = document.getElementById('dataOutput');
+            const resultsContainer = document.getElementById('indexedData');
+
+            if (searchInput !== '') {
+                const data = {{ data|safe }};
+                const headers = {{ headers|safe }};
+                const matchingRows = data.filter(row => row.some(cell => cell.toString().includes(searchInput)));
+
+                if (matchingRows.length > 0) {
+                    const tableHTML = `
+                        <table class="data-table">
+                            <thead>
+                                <tr>${headers.map(header => `<th>${header}</th>`).join('')}</tr>
+                            </thead>
+                            <tbody>
+                                ${matchingRows.map(row => `
+                                    <tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>
+                                `).join('')}
+                            </tbody>
+                        </table>`;
+                    output.innerHTML = tableHTML;
+                    resultsContainer.classList.remove('hidden');
+                } else {
+                    output.innerHTML = `<p>Aucune ligne ne contient "${searchInput}".</p>`;
+                    resultsContainer.classList.remove('hidden');
+                }
+            } else {
+                alert("Veuillez entrer un mot ou un chiffre pour rechercher.");
+            }
+        });
+    </script>
+
+</body>
+</html>

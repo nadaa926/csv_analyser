@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyse Statistique</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fce4ec;  /* Baby pink */
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        h1 {
+            text-align: left;
+            color: #e91e63;
+            margin-top: 20px;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f7c8d4;  /* Baby pink for container */
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            font-size: 18px;
+            color: #d81b60;
+            font-weight: bold;
+        }
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 8px;
+            border: 2px solid #e91e63;
+            border-radius: 8px;
+            font-size: 16px;
+            background-color: #fff;
+            color: #333;
+        }
+        button {
+            background-color: #e91e63;  /* Rose girly */
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            width: 100%;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #c2185b;
+            transform: translateY(-2px);
+        }
+        button:active {
+            background-color: #880e4f;
+            transform: translateY(1px);
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #e91e63;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #d81b60;
+            color: white;
+        }
+        td {
+            background-color: #f0f0f0;
+        }
+        .stats-table {
+            margin-top: 30px;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        #backToMenuButton {
+            background-color: #e91e63;
+            color: white;
+            font-weight: bold;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            width: auto; /* Pour réduire la largeur du bouton */
+            display: inline-block;
+            margin-bottom: 20px;
+            float: left; /* Positionne le bouton à gauche */
+        }
+        #backToMenuButton:hover {
+            background-color: #c2185b;
+            transform: translateY(-2px);
+        }
+        #backToMenuButton:active {
+            background-color: #880e4f;
+            transform: translateY(1px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Bouton "Retour au menu" positionné à gauche et plus petit -->
+        <div class="form-group">
+            <button type="button" id="backToMenuButton" onclick="window.location.href='/menu/'">Retour au menu</button>
+        </div>
+        <h1>Analyse Statistique</h1>
+
+        <form method="GET">
+            <div class="form-group">
+                <label for="column">Sélectionnez une colonne :</label>
+                <select name="column" id="column">
+                    <option value="">-- Sélectionnez une colonne --</option>
+                    {% for column in columns %}
+                        <option value="{{ column }}" {% if column == selected_column %}selected{% endif %}>{{ column }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit">Analyser la colonne</button>
+        </form>
+
+        {% if stats_result %}
+            <div>
+                <h2>Résultats de l'analyse</h2>
+                {% if stats_result.error %}
+                    <p class="error">{{ stats_result.error }}</p>
+                {% else %}
+                    <table class="stats-table">
+                        <thead>
+                            <tr>
+                                <th>Statistique</th>
+                                <th>{{ selected_column }} </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if stats_result.type == 'numeric' %}
+                                <tr>
+                                    <td>Moyenne</td>
+                                    <td>{{ stats_result.mean }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Médiane</td>
+                                    <td>{{ stats_result.median }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Minimum</td>
+                                    <td>{{ stats_result.min }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Maximum</td>
+                                    <td>{{ stats_result.max }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Écart-type</td>
+                                    <td>{{ stats_result.stddev }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Valeurs aberrantes</td>
+                                    <td>{{ stats_result.outliers }}</td>
+                                </tr>
+                            {% elif stats_result.type == 'categorical' %}
+                                <tr>
+                                    <td>Mode</td>
+                                    <td>{{ stats_result.mode }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Fréquence du mode</td>
+                                    <td>{{ stats_result.mode_count }}</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

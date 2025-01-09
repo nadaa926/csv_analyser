@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyse Statistique et Visualisation</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script> <!-- Inclure Plotly JS -->
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fce4ec; /* Couleur de fond de la page : baby pink */
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        h1 {
+            color: #e91e63;  /* Couleur rose girly */
+            text-align: center;
+            font-size: 32px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f7c8d4; /* Couleur baby pink pour le conteneur */
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            font-size: 18px;
+            color: #d81b60;
+            font-weight: bold;
+        }
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 8px;
+            border: 2px solid #e91e63;
+            border-radius: 8px;
+            font-size: 16px;
+            background-color: #fff;
+            color: #333;
+        }
+        button {
+            background-color: #e91e63;  /* Rose girly */
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            width: 100%;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #c2185b;
+            transform: translateY(-2px);
+        }
+        button:active {
+            background-color: #880e4f;
+            transform: translateY(1px);
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #880e4f;
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-size: 17px;
+            font-weight: bold;
+        }
+        .graph-container {
+            margin-top: 30px;
+        }
+        #plotly-graph {
+            width: 100%;
+            height: 400px;  /* Hauteur pour le graphique */
+        }
+
+        /* Petit bouton "Retour au menu" positionné à gauche et moins large */
+        #backToMenuButton {
+            background-color: #e91e63;
+            color: white;
+            font-weight: bold;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            width: auto; /* Pour réduire la largeur du bouton */
+            display: inline-block;
+            margin-bottom: 20px;
+            float: left; /* Positionne le bouton à gauche */
+        }
+        #backToMenuButton:hover {
+            background-color: #c2185b;
+            transform: translateY(-2px);
+        }
+        #backToMenuButton:active {
+            background-color: #880e4f;
+            transform: translateY(1px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Bouton "Retour au menu" positionné à gauche et plus petit -->
+        <div class="form-group">
+            <button type="button" id="backToMenuButton" onclick="window.location.href='/menu/'">Retour au menu</button>
+        </div>
+        <h1>Visualisation des Données CSV</h1>
+        <!-- Formulaire pour choisir une colonne et un type de graphique -->
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="column">Choisir une colonne :</label>
+                <select id="column" name="column" required>
+                    {% for column in columns %}
+                        <option value="{{ column }}">{{ column }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="plot_type">Choisir un type de graphique :</label>
+                <select id="plot_type" name="plot_type" required>
+                    <option value="histplot">Histogramme</option>
+                    <option value="boxplot">Box Plot</option>
+                    <option value="kdeplot">KDE Plot</option>
+                    <option value="scatterplot">Scatter Plot</option>
+                    <option value="barplot">Bar Plot</option>
+                    <option value="countplot">Count Plot</option>
+                    <option value="heatmap">Heatmap</option>
+                    <option value="lineplot">Line Plot</option>
+                </select>
+            </div>
+            <button type="submit">Générer le graphique</button>
+        </form>
+        <style>
+        .error {
+            color: red;
+            font-weight: bold;
+            animation: blink 2s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50%, 100% {
+                opacity: 1;
+            }
+            25%, 75% {
+                opacity: 0;
+            }
+        }
+        </style
+
+    <!-- Afficher le graphique --><!-- Afficher les erreurs -->
+    {% if error %}
+        <div class="error">{{ error }}</div>
+    {% endif %}
+</style>
+
+        {% if graph %}
+            <div class="graph-container">
+                <h2>Graphique généré</h2>
+                <div id="plotly-graph"></div> <!-- Div pour afficher le graphique Plotly -->
+                <script type="text/javascript">
+                    var graphData = {{ graph|safe }};  // Passer les données du graphique JSON
+                    Plotly.newPlot('plotly-graph', graphData);  // Rendre le graphique interactif
+                </script>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
